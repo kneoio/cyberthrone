@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { NSpace, NText, NButton, NAlert } from '@naive-ui/react';
+import {
+  Box,
+  Typography,
+  Button,
+  Alert,
+  Stack,
+  Container
+} from '@mui/material';
+import { Add, Refresh } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { Add, Refresh } from '@vicons/ionicons5';
 import { Dictator } from '../types/dictator';
 import { publicApi } from '../services/api';
 import { useKeycloak } from '../hooks/useKeycloak';
@@ -42,50 +49,55 @@ const DictatorsPage: React.FC = () => {
   };
 
   return (
-    <NSpace vertical size="large" style={{ padding: '24px 0' }}>
-      {/* Header */}
-      <NSpace align="center" justify="space-between">
-        <NSpace vertical>
-          <NText style={{ fontSize: '32px', fontWeight: 'bold' }}>
-            All Dictators
-          </NText>
-          <NText depth="2">
-            Browse and explore dictator profiles and their achievements
-          </NText>
-        </NSpace>
-        
-        <NSpace>
-          <NButton
-            type="default"
-            renderIcon={() => <Refresh />}
-            onClick={handleRefresh}
-            loading={loading}
-          >
-            Refresh
-          </NButton>
+    <Container maxWidth="lg" sx={{ py: 3 }}>
+      <Stack spacing={3}>
+        {/* Header */}
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          <Box>
+            <Typography variant="h3" component="h1" gutterBottom>
+              All Dictators
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Browse and explore dictator profiles and their achievements
+            </Typography>
+          </Box>
           
-          {isAuthenticated && (
-            <NButton
-              type="primary"
-              renderIcon={() => <Add />}
-              onClick={handleCreateProfile}
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              startIcon={<Refresh />}
+              onClick={handleRefresh}
+              disabled={loading}
             >
-              Create Profile
-            </NButton>
-          )}
-        </NSpace>
-      </NSpace>
+              Refresh
+            </Button>
+            
+            {isAuthenticated && (
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={handleCreateProfile}
+              >
+                Create Profile
+              </Button>
+            )}
+          </Stack>
+        </Box>
 
-      {/* Error Message */}
-      {error && (
-        <NAlert type="error" title="Error" closable onClose={() => setError(null)}>
-          {error}
-        </NAlert>
-      )}
+        {/* Error Message */}
+        {error && (
+          <Alert 
+            severity="error" 
+            onClose={() => setError(null)}
+          >
+            {error}
+          </Alert>
+        )}
 
-      {/* Dictators List */}
-      <DictatorList dictators={dictators} loading={loading} />
-    </NSpace>
+        {/* Dictators List */}
+        <DictatorList dictators={dictators} loading={loading} />
+      </Stack>
+    </Container>
   );
 };
 

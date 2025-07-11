@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, Typography, Button, Chip, Stack, Box, Badge } from '@mui/material';
+import { Card, CardContent, Typography, Button, Chip, Stack,  Badge } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { Visibility, CalendarToday, EmojiEvents } from '@mui/icons-material';
 import { Dictator } from '../../types/dictator';

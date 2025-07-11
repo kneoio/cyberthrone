@@ -1,7 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { NSpace, NText, NButton, NCard, NTag, NAlert, NDivider } from '@naive-ui/react';
-import { ArrowBack, Edit, Calendar, Person, Location, Trophy } from '@vicons/ionicons5';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Alert,
+  Divider,
+  Stack,
+  Container
+} from '@mui/material';
+import { ArrowBack, Edit, CalendarToday, Person, LocationOn, EmojiEvents } from '@mui/icons-material';
 import { Dictator } from '../types/dictator';
 import { publicApi } from '../services/api';
 import { useKeycloak } from '../hooks/useKeycloak';
@@ -53,102 +64,118 @@ const DictatorDetailPage: React.FC = () => {
 
   if (error) {
     return (
-      <NSpace vertical align="center" style={{ padding: '40px 0' }}>
-        <NAlert type="error" title="Error">
-          {error}
-        </NAlert>
-        <NButton onClick={handleGoBack}>Go Back</NButton>
-      </NSpace>
+      <Container maxWidth="md" sx={{ py: 5 }}>
+        <Stack spacing={3} alignItems="center">
+          <Alert severity="error">
+            {error}
+          </Alert>
+          <Button variant="outlined" onClick={handleGoBack}>
+            Go Back
+          </Button>
+        </Stack>
+      </Container>
     );
   }
 
   if (!dictator) {
     return (
-      <NSpace vertical align="center" style={{ padding: '40px 0' }}>
-        <NAlert type="warning" title="Not Found">
-          Dictator not found
-        </NAlert>
-        <NButton onClick={handleGoBack}>Go Back</NButton>
-      </NSpace>
+      <Container maxWidth="md" sx={{ py: 5 }}>
+        <Stack spacing={3} alignItems="center">
+          <Alert severity="warning">
+            Dictator not found
+          </Alert>
+          <Button variant="outlined" onClick={handleGoBack}>
+            Go Back
+          </Button>
+        </Stack>
+      </Container>
     );
   }
 
   return (
-    <NSpace vertical size="large" style={{ padding: '24px 0' }}>
-      {/* Header */}
-      <NSpace align="center" justify="space-between">
-        <NButton
-          type="default"
-          renderIcon={() => <ArrowBack />}
-          onClick={handleGoBack}
-        >
-          Back
-        </NButton>
-        
-        {isOwner && (
-          <NButton
-            type="primary"
-            renderIcon={() => <Edit />}
-            onClick={handleEditProfile}
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Stack spacing={3}>
+        {/* Header */}
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBack />}
+            onClick={handleGoBack}
           >
-            Edit Profile
-          </NButton>
-        )}
-      </NSpace>
+            Back
+          </Button>
+          
+          {isOwner && (
+            <Button
+              variant="contained"
+              startIcon={<Edit />}
+              onClick={handleEditProfile}
+            >
+              Edit Profile
+            </Button>
+          )}
+        </Box>
 
-      {/* Dictator Profile Card */}
-      <NCard>
-        <NSpace vertical size="large">
-          <NSpace align="center" justify="space-between">
-            <NSpace vertical>
-              <NText style={{ fontSize: '36px', fontWeight: 'bold' }}>
-                {dictator.name}
-              </NText>
-              <NTag type="info" size="large">
-                @{dictator.username}
-              </NTag>
-            </NSpace>
-            
-            <NSpace align="center">
-              <Trophy style={{ fontSize: '32px', color: '#f0a020' }} />
-              <NText style={{ fontSize: '24px', fontWeight: 'bold' }}>
-                {dictator.achievements.length} Achievements
-              </NText>
-            </NSpace>
-          </NSpace>
+        {/* Dictator Profile Card */}
+        <Card>
+          <CardContent>
+            <Stack spacing={3}>
+              <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                <Stack spacing={1}>
+                  <Typography variant="h3" component="h1" fontWeight="bold">
+                    {dictator.name}
+                  </Typography>
+                  <Chip 
+                    label={`@${dictator.username}`} 
+                    color="primary" 
+                    size="medium"
+                  />
+                </Stack>
+                
+                <Box display="flex" alignItems="center" gap={1}>
+                  <EmojiEvents sx={{ fontSize: 32, color: '#f0a020' }} />
+                  <Typography variant="h5" fontWeight="bold">
+                    {dictator.achievements.length} Achievements
+                  </Typography>
+                </Box>
+              </Box>
 
-          <NSpace vertical size="medium">
-            <NSpace align="center">
-              <Location />
-              <NText strong>Country: </NText>
-              <NTag type="success" size="large">{dictator.country}</NTag>
-            </NSpace>
-            
-            <NSpace align="center">
-              <Calendar />
-              <NText strong>Years in Power: </NText>
-              <NText>{formatYearsInPower(dictator.yearsInPower)}</NText>
-            </NSpace>
-            
-            <NSpace align="center">
-              <Person />
-              <NText strong>Profile Created: </NText>
-              <NText>{formatDate(dictator.createdAt)}</NText>
-            </NSpace>
-          </NSpace>
+              <Stack spacing={2}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <LocationOn color="action" />
+                  <Typography variant="body1" fontWeight="bold">Country:</Typography>
+                  <Chip label={dictator.country} color="success" size="medium" />
+                </Box>
+                
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CalendarToday color="action" />
+                  <Typography variant="body1" fontWeight="bold">Years in Power:</Typography>
+                  <Typography variant="body1">{formatYearsInPower(dictator.yearsInPower)}</Typography>
+                </Box>
+                
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Person color="action" />
+                  <Typography variant="body1" fontWeight="bold">Profile Created:</Typography>
+                  <Typography variant="body1">{formatDate(dictator.createdAt)}</Typography>
+                </Box>
+              </Stack>
 
-          <NDivider />
+              <Divider />
 
-          <NSpace vertical>
-            <NText strong style={{ fontSize: '18px' }}>Description</NText>
-            <NText style={{ lineHeight: '1.6' }}>{dictator.description}</NText>
-          </NSpace>
-        </NSpace>
-      </NCard>
+              <Stack spacing={1}>
+                <Typography variant="h6" fontWeight="bold">Description</Typography>
+                <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
+                  {dictator.description}
+                </Typography>
+              </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
 
-      {/* Achievements */}
-      <AchievementList achievements={dictator.achievements} />
-    </NSpace>
+        {/* Achievements */}
+        <AchievementList achievements={dictator.achievements} />
+      </Stack>
+    </Container>
   );
 };
 

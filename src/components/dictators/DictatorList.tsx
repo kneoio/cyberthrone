@@ -1,6 +1,17 @@
 import React, { useState, useMemo } from 'react';
-import { NGrid, NGridItem, NSpace, NInput, NSelect, NEmpty, NText } from '@naive-ui/react';
-import { Search, Filter } from '@vicons/ionicons5';
+import {
+  Box,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Typography,
+  Grid,
+  Stack,
+  InputAdornment
+} from '@mui/material';
+import { Search, FilterList } from '@mui/icons-material';
 import { Dictator } from '../../types/dictator';
 import { searchDictators, filterDictatorsByCountry, getUniqueCountries } from '../../utils/helpers';
 import DictatorCard from './DictatorCard';
@@ -41,53 +52,69 @@ const DictatorList: React.FC<DictatorListProps> = ({ dictators, loading = false 
   }
 
   return (
-    <NSpace vertical size="large">
+    <Stack spacing={3}>
       {/* Search and Filter Controls */}
-      <NSpace align="center" justify="space-between">
-        <NSpace align="center">
-          <NInput
+      <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <TextField
             placeholder="Search dictators..."
             value={searchQuery}
-            onInput={setSearchQuery}
-            style={{ width: '300px' }}
-            prefix={() => <Search />}
-            clearable
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{ width: 300 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            }}
+            variant="outlined"
+            size="small"
           />
           
-          <NSelect
-            placeholder="Filter by country"
-            value={selectedCountry}
-            onUpdateValue={setSelectedCountry}
-            options={countryOptions}
-            style={{ width: '200px' }}
-            renderTag={() => <Filter />}
-            clearable
-          />
-        </NSpace>
+          <FormControl sx={{ width: 200 }} size="small">
+            <InputLabel>Filter by country</InputLabel>
+            <Select
+              value={selectedCountry}
+              onChange={(e) => setSelectedCountry(e.target.value)}
+              label="Filter by country"
+              startAdornment={
+                <InputAdornment position="start">
+                  <FilterList />
+                </InputAdornment>
+              }
+            >
+              {countryOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
         
-        <NText depth="2">
+        <Typography variant="body2" color="text.secondary">
           {filteredDictators.length} dictator{filteredDictators.length !== 1 ? 's' : ''} found
-        </NText>
-      </NSpace>
+        </Typography>
+      </Box>
 
       {/* Dictators Grid */}
       {filteredDictators.length === 0 ? (
-        <NEmpty description="No dictators found" />
+        <Box textAlign="center" py={4}>
+          <Typography variant="h6" color="text.secondary">
+            No dictators found
+          </Typography>
+        </Box>
       ) : (
-        <NGrid
-          xGap="16"
-          yGap="16"
-          cols="1 s:2 m:3 l:4"
-          responsive="screen"
-        >
+        <Grid container spacing={2}>
           {filteredDictators.map((dictator) => (
-            <NGridItem key={dictator.id}>
+            <Grid item xs={12} sm={6} md={4} lg={3} key={dictator.id}>
               <DictatorCard dictator={dictator} />
-            </NGridItem>
+            </Grid>
           ))}
-        </NGrid>
+        </Grid>
       )}
-    </NSpace>
+    </Stack>
   );
 };
 

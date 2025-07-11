@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { NSpace, NText, NButton, NCard, NAlert, NModal, NForm, NFormItem, NInput, NInputNumber } from '@naive-ui/react';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Stack,
+  Container
+} from '@mui/material';
+import { Edit, Save } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { Add, Edit, Save, Trash } from '@vicons/ionicons5';
 import { Dictator, Achievement, CreateAchievementRequest } from '../types/dictator';
 import { publicApi, protectedApi } from '../services/api';
 import { useKeycloak } from '../hooks/useKeycloak';
@@ -115,127 +129,157 @@ const ProfilePage: React.FC = () => {
 
   if (error) {
     return (
-      <NSpace vertical align="center" style={{ padding: '40px 0' }}>
-        <NAlert type="error" title="Error">
-          {error}
-        </NAlert>
-        <NButton onClick={() => window.location.reload()}>Retry</NButton>
-      </NSpace>
+      <Container maxWidth="md" sx={{ py: 5, textAlign: 'center' }}>
+        <Stack spacing={2} alignItems="center">
+          <Alert severity="error">
+            {error}
+          </Alert>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </Stack>
+      </Container>
     );
   }
 
   if (!dictator) {
     return (
-      <NSpace vertical align="center" style={{ padding: '40px 0' }}>
-        <NAlert type="info" title="No Profile Found">
-          You don't have a dictator profile yet. Create one to get started!
-        </NAlert>
-        <NButton type="primary" onClick={() => navigate(ROUTES.CREATE_PROFILE)}>
-          Create Profile
-        </NButton>
-      </NSpace>
+      <Container maxWidth="md" sx={{ py: 5, textAlign: 'center' }}>
+        <Stack spacing={2} alignItems="center">
+          <Alert severity="info">
+            You don't have a dictator profile yet. Create one to get started!
+          </Alert>
+          <Button variant="contained" onClick={() => navigate(ROUTES.CREATE_PROFILE)}>
+            Create Profile
+          </Button>
+        </Stack>
+      </Container>
     );
   }
 
   return (
-    <NSpace vertical size="large" style={{ padding: '24px 0' }}>
-      {/* Header */}
-      <NSpace align="center" justify="space-between">
-        <NSpace vertical>
-          <NText style={{ fontSize: '32px', fontWeight: 'bold' }}>
-            My Profile
-          </NText>
-          <NText depth="2">
-            Manage your dictator profile and achievements
-          </NText>
-        </NSpace>
-        
-        <NButton
-          type="primary"
-          renderIcon={() => <Edit />}
-          onClick={() => navigate(ROUTES.CREATE_PROFILE)}
+    <Container maxWidth="lg" sx={{ py: 3 }}>
+      <Stack spacing={3}>
+        {/* Header */}
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          <Box>
+            <Typography variant="h3" component="h1" gutterBottom>
+              My Profile
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Manage your dictator profile and achievements
+            </Typography>
+          </Box>
+          
+          <Button
+            variant="contained"
+            startIcon={<Edit />}
+            onClick={() => navigate(ROUTES.CREATE_PROFILE)}
+          >
+            Edit Profile
+          </Button>
+        </Box>
+
+        {/* Error Message */}
+        {error && (
+          <Alert severity="error" onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
+
+        {/* Profile Card */}
+        <Card>
+          <CardContent>
+            <Stack spacing={3}>
+              <Box>
+                <Typography variant="h4" component="h2" gutterBottom>
+                  {dictator.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  @{dictator.username}
+                </Typography>
+              </Box>
+
+              <Stack spacing={1}>
+                <Typography variant="body1">
+                  <strong>Country:</strong> {dictator.country}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Years in Power:</strong> {dictator.yearsInPower}
+                </Typography>
+                <Typography variant="body1">
+                  <strong>Description:</strong> {dictator.description}
+                </Typography>
+              </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
+
+        {/* Achievements */}
+        <AchievementList
+          achievements={dictator.achievements}
+          showActions={true}
+          onAddAchievement={handleAddAchievement}
+          onEditAchievement={handleEditAchievement}
+          onDeleteAchievement={handleDeleteAchievement}
+        />
+
+        {/* Achievement Modal */}
+        <Dialog
+          open={showAchievementModal}
+          onClose={() => setShowAchievementModal(false)}
+          maxWidth="sm"
+          fullWidth
         >
-          Edit Profile
-        </NButton>
-      </NSpace>
-
-      {/* Error Message */}
-      {error && (
-        <NAlert type="error" title="Error" closable onClose={() => setError(null)}>
-          {error}
-        </NAlert>
-      )}
-
-      {/* Profile Card */}
-      <NCard>
-        <NSpace vertical size="large">
-          <NSpace align="center" justify="space-between">
-            <NSpace vertical>
-              <NText style={{ fontSize: '28px', fontWeight: 'bold' }}>
-                {dictator.name}
-              </NText>
-              <NText depth="2">@{dictator.username}</NText>
-            </NSpace>
-          </NSpace>
-
-          <NSpace vertical size="medium">
-            <NText><strong>Country:</strong> {dictator.country}</NText>
-            <NText><strong>Years in Power:</strong> {dictator.yearsInPower}</NText>
-            <NText><strong>Description:</strong> {dictator.description}</NText>
-          </NSpace>
-        </NSpace>
-      </NCard>
-
-      {/* Achievements */}
-      <AchievementList
-        achievements={dictator.achievements}
-        showActions={true}
-        onAddAchievement={handleAddAchievement}
-        onEditAchievement={handleEditAchievement}
-        onDeleteAchievement={handleDeleteAchievement}
-      />
-
-      {/* Achievement Modal */}
-      <NModal
-        show={showAchievementModal}
-        onUpdateShow={setShowAchievementModal}
-        preset="dialog"
-        title={editingAchievement ? 'Edit Achievement' : 'Add Achievement'}
-        positiveText="Save"
-        negativeText="Cancel"
-        onPositiveClick={handleSaveAchievement}
-      >
-        <NForm>
-          <NFormItem label="Title" required>
-            <NInput
-              value={achievementForm.title}
-              onUpdateValue={(value) => setAchievementForm({ ...achievementForm, title: value })}
-              placeholder="Enter achievement title"
-            />
-          </NFormItem>
-          
-          <NFormItem label="Description" required>
-            <NInput
-              type="textarea"
-              value={achievementForm.description}
-              onUpdateValue={(value) => setAchievementForm({ ...achievementForm, description: value })}
-              placeholder="Describe the achievement"
-              rows={4}
-            />
-          </NFormItem>
-          
-          <NFormItem label="Year" required>
-            <NInputNumber
-              value={achievementForm.year}
-              onUpdateValue={(value) => setAchievementForm({ ...achievementForm, year: value || new Date().getFullYear() })}
-              placeholder="Enter year"
-              min={1900}
-              max={new Date().getFullYear()}
-            />
-          </NFormItem>
-        </NForm>
-      </NModal>
-    </NSpace>
+          <DialogTitle>
+            {editingAchievement ? 'Edit Achievement' : 'Add Achievement'}
+          </DialogTitle>
+          <DialogContent>
+            <Stack spacing={2} sx={{ mt: 1 }}>
+              <TextField
+                label="Title"
+                value={achievementForm.title}
+                onChange={(e) => setAchievementForm({ ...achievementForm, title: e.target.value })}
+                placeholder="Enter achievement title"
+                required
+                fullWidth
+              />
+              
+              <TextField
+                label="Description"
+                value={achievementForm.description}
+                onChange={(e) => setAchievementForm({ ...achievementForm, description: e.target.value })}
+                placeholder="Describe the achievement"
+                multiline
+                rows={4}
+                required
+                fullWidth
+              />
+              
+              <TextField
+                label="Year"
+                type="number"
+                value={achievementForm.year}
+                onChange={(e) => setAchievementForm({ ...achievementForm, year: parseInt(e.target.value) || new Date().getFullYear() })}
+                placeholder="Enter year"
+                inputProps={{
+                  min: 1900,
+                  max: new Date().getFullYear()
+                }}
+                required
+                fullWidth
+              />
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowAchievementModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveAchievement} variant="contained" startIcon={<Save />}>
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Stack>
+    </Container>
   );
 };
 

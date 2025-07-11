@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { NSpace, NText, NButton, NCard, NGrid, NGridItem, NDivider } from '@naive-ui/react';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Divider,
+  Stack,
+  Container
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { People, Add, Trophy } from '@vicons/ionicons5';
+import { People, Add, EmojiEvents } from '@mui/icons-material';
 import { Dictator } from '../types/dictator';
 import { publicApi } from '../services/api';
 import { useKeycloak } from '../hooks/useKeycloak';
@@ -33,130 +43,142 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <NSpace vertical size="large" style={{ padding: '40px 0' }}>
-      {/* Hero Section */}
-      <NSpace vertical align="center" style={{ textAlign: 'center', padding: '60px 0' }}>
-        <NText style={{ fontSize: '48px', fontWeight: 'bold', background: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          🏛️ {APP_NAME}
-        </NText>
-        <NText style={{ fontSize: '20px', maxWidth: '600px', lineHeight: '1.6' }} depth="2">
-          {APP_DESCRIPTION}
-        </NText>
-        <NSpace size="large" style={{ marginTop: '30px' }}>
-          <NButton
-            type="primary"
-            size="large"
-            renderIcon={() => <People />}
-            onClick={() => navigate(ROUTES.DICTATORS)}
+    <Container maxWidth="lg" sx={{ py: 5 }}>
+      <Stack spacing={6}>
+        {/* Hero Section */}
+        <Box textAlign="center" py={8}>
+          <Typography 
+            variant="h2" 
+            component="h1" 
+            fontWeight="bold"
+            sx={{
+              background: 'linear-gradient(45deg, #ff6b6b, #4ecdc4)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              mb: 2
+            }}
           >
-            Browse Dictators
-          </NButton>
-          {isAuthenticated ? (
-            <NButton
-              type="default"
+            🏛️ {APP_NAME}
+          </Typography>
+          <Typography 
+            variant="h5" 
+            color="text.secondary" 
+            sx={{ maxWidth: 600, mx: 'auto', lineHeight: 1.6, mb: 4 }}
+          >
+            {APP_DESCRIPTION}
+          </Typography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center">
+            <Button
+              variant="contained"
               size="large"
-              renderIcon={() => <Add />}
-              onClick={() => navigate(ROUTES.CREATE_PROFILE)}
+              startIcon={<People />}
+              onClick={() => navigate(ROUTES.DICTATORS)}
             >
-              Create Profile
-            </NButton>
+              Browse Dictators
+            </Button>
+            {isAuthenticated ? (
+              <Button
+                variant="outlined"
+                size="large"
+                startIcon={<Add />}
+                onClick={() => navigate(ROUTES.CREATE_PROFILE)}
+              >
+                Create Profile
+              </Button>
+            ) : (
+              <LoginButton />
+            )}
+          </Stack>
+        </Box>
+
+        <Divider />
+
+        {/* Featured Dictators Section */}
+        <Box textAlign="center">
+          <Typography variant="h3" component="h2" fontWeight="bold" gutterBottom>
+            Featured Dictators
+          </Typography>
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>
+            Discover some of the most notable dictators and their achievements
+          </Typography>
+
+          {loading ? (
+            <LoadingSpinner message="Loading featured dictators..." />
           ) : (
-            <LoginButton />
+            <>
+              <Grid container spacing={3} sx={{ mb: 4 }}>
+                {featuredDictators.map((dictator) => (
+                  <Grid item xs={12} sm={6} md={4} key={dictator.id}>
+                    <DictatorCard dictator={dictator} />
+                  </Grid>
+                ))}
+              </Grid>
+              
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={() => navigate(ROUTES.DICTATORS)}
+              >
+                View All Dictators
+              </Button>
+            </>
           )}
-        </NSpace>
-      </NSpace>
+        </Box>
 
-      <NDivider />
+        <Divider />
 
-      {/* Featured Dictators Section */}
-      <NSpace vertical align="center" style={{ padding: '40px 0' }}>
-        <NText style={{ fontSize: '32px', fontWeight: 'bold', textAlign: 'center' }}>
-          Featured Dictators
-        </NText>
-        <NText style={{ fontSize: '16px', textAlign: 'center' }} depth="2">
-          Discover some of the most notable dictators and their achievements
-        </NText>
-
-        {loading ? (
-          <LoadingSpinner message="Loading featured dictators..." />
-        ) : (
-          <NGrid
-            xGap="24"
-            yGap="24"
-            cols="1 s:2 m:3"
-            responsive="screen"
-            style={{ width: '100%', maxWidth: '1200px' }}
-          >
-            {featuredDictators.map((dictator) => (
-              <NGridItem key={dictator.id}>
-                <DictatorCard dictator={dictator} />
-              </NGridItem>
-            ))}
-          </NGrid>
-        )}
-
-        <NButton
-          type="default"
-          size="large"
-          onClick={() => navigate(ROUTES.DICTATORS)}
-        >
-          View All Dictators
-        </NButton>
-      </NSpace>
-
-      <NDivider />
-
-      {/* Features Section */}
-      <NSpace vertical align="center" style={{ padding: '40px 0' }}>
-        <NText style={{ fontSize: '32px', fontWeight: 'bold', textAlign: 'center' }}>
-          What You Can Do
-        </NText>
-        
-        <NGrid
-          xGap="24"
-          yGap="24"
-          cols="1 s:2 m:3"
-          responsive="screen"
-          style={{ width: '100%', maxWidth: '1000px' }}
-        >
-          <NGridItem>
-            <NCard hoverable style={{ height: '200px', textAlign: 'center' }}>
-              <NSpace vertical align="center" justify="center" style={{ height: '100%' }}>
-                <People style={{ fontSize: '48px', color: '#18a058' }} />
-                <NText strong>Browse Dictators</NText>
-                <NText depth="2">
-                  Explore profiles and learn about different dictators from history
-                </NText>
-              </NSpace>
-            </NCard>
-          </NGridItem>
+        {/* Features Section */}
+        <Box textAlign="center">
+          <Typography variant="h3" component="h2" fontWeight="bold" gutterBottom>
+            What You Can Do
+          </Typography>
           
-          <NGridItem>
-            <NCard hoverable style={{ height: '200px', textAlign: 'center' }}>
-              <NSpace vertical align="center" justify="center" style={{ height: '100%' }}>
-                <Add style={{ fontSize: '48px', color: '#2080f0' }} />
-                <NText strong>Create Profile</NText>
-                <NText depth="2">
-                  Build your own dictator profile with custom information
-                </NText>
-              </NSpace>
-            </NCard>
-          </NGridItem>
-          
-          <NGridItem>
-            <NCard hoverable style={{ height: '200px', textAlign: 'center' }}>
-              <NSpace vertical align="center" justify="center" style={{ height: '100%' }}>
-                <Trophy style={{ fontSize: '48px', color: '#f0a020' }} />
-                <NText strong>Manage Achievements</NText>
-                <NText depth="2">
-                  Add and manage achievements for your dictator profile
-                </NText>
-              </NSpace>
-            </NCard>
-          </NGridItem>
-        </NGrid>
-      </NSpace>
-    </NSpace>
+          <Grid container spacing={3} sx={{ mt: 2 }}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ height: 200, '&:hover': { boxShadow: 4 } }}>
+                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <People sx={{ fontSize: 48, color: '#18a058', mb: 2 }} />
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    Browse Dictators
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Explore profiles and learn about different dictators from history
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ height: 200, '&:hover': { boxShadow: 4 } }}>
+                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <Add sx={{ fontSize: 48, color: '#2080f0', mb: 2 }} />
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    Create Profile
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Build your own dictator profile with custom information
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ height: 200, '&:hover': { boxShadow: 4 } }}>
+                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+                  <EmojiEvents sx={{ fontSize: 48, color: '#f0a020', mb: 2 }} />
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    Manage Achievements
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Add and manage achievements for your dictator profile
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
+      </Stack>
+    </Container>
   );
 };
 

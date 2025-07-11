@@ -1,6 +1,12 @@
 import React from 'react';
-import { NGrid, NGridItem, NEmpty, NSpace, NText, NButton } from '@naive-ui/react';
-import { Add } from '@vicons/ionicons5';
+import {
+  Box,
+  Typography,
+  Button,
+  Grid,
+  Stack
+} from '@mui/material';
+import { Add } from '@mui/icons-material';
 import { Achievement } from '../../types/dictator';
 import { getAchievementsByYear } from '../../utils/helpers';
 import AchievementCard from './AchievementCard';
@@ -23,45 +29,44 @@ const AchievementList: React.FC<AchievementListProps> = ({
   const sortedAchievements = getAchievementsByYear(achievements);
 
   return (
-    <NSpace vertical size="large">
-      <NSpace align="center" justify="space-between">
-        <NText strong style={{ fontSize: '18px' }}>
+    <Stack spacing={3}>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h6" fontWeight="bold">
           Achievements ({achievements.length})
-        </NText>
+        </Typography>
         
         {showActions && onAddAchievement && (
-          <NButton
-            type="primary"
-            renderIcon={() => <Add />}
+          <Button
+            variant="contained"
+            startIcon={<Add />}
             onClick={onAddAchievement}
           >
             Add Achievement
-          </NButton>
+          </Button>
         )}
-      </NSpace>
+      </Box>
 
       {sortedAchievements.length === 0 ? (
-        <NEmpty description="No achievements yet" />
+        <Box textAlign="center" py={4}>
+          <Typography variant="h6" color="text.secondary">
+            No achievements yet
+          </Typography>
+        </Box>
       ) : (
-        <NGrid
-          xGap="16"
-          yGap="16"
-          cols="1 s:2 m:3"
-          responsive="screen"
-        >
+        <Grid container spacing={2}>
           {sortedAchievements.map((achievement) => (
-            <NGridItem key={achievement.id}>
+            <Grid item xs={12} sm={6} md={4} key={achievement.id}>
               <AchievementCard
                 achievement={achievement}
                 showActions={showActions}
                 onEdit={onEditAchievement}
                 onDelete={onDeleteAchievement}
               />
-            </NGridItem>
+            </Grid>
           ))}
-        </NGrid>
+        </Grid>
       )}
-    </NSpace>
+    </Stack>
   );
 };
 

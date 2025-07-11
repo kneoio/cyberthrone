@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { NSpace, NText, NButton, NCard, NAlert, NForm, NFormItem, NInput } from '@naive-ui/react';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  Alert,
+  TextField,
+  Stack,
+  Container
+} from '@mui/material';
+import { ArrowBack, Save, Person } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { ArrowBack, Save, Person } from '@vicons/ionicons5';
 import { CreateDictatorRequest, Dictator } from '../types/dictator';
 import { publicApi, protectedApi } from '../services/api';
 import { useKeycloak } from '../hooks/useKeycloak';
@@ -132,130 +142,127 @@ const CreateProfilePage: React.FC = () => {
   };
 
   return (
-    <NSpace vertical size="large" style={{ padding: '24px 0' }}>
-      {/* Header */}
-      <NSpace align="center" justify="space-between">
-        <NSpace vertical>
-          <NText style={{ fontSize: '32px', fontWeight: 'bold' }}>
-            {isEditing ? 'Edit Profile' : 'Create Profile'}
-          </NText>
-          <NText depth="2">
-            {isEditing ? 'Update your dictator profile information' : 'Set up your dictator profile'}
-          </NText>
-        </NSpace>
-        
-        <NButton
-          type="default"
-          renderIcon={() => <ArrowBack />}
-          onClick={handleGoBack}
-        >
-          Back
-        </NButton>
-      </NSpace>
+    <Container maxWidth="md" sx={{ py: 3 }}>
+      <Stack spacing={3}>
+        {/* Header */}
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          <Box>
+            <Typography variant="h3" component="h1" gutterBottom>
+              {isEditing ? 'Edit Profile' : 'Create Profile'}
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              {isEditing ? 'Update your dictator profile information' : 'Set up your dictator profile'}
+            </Typography>
+          </Box>
+          
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBack />}
+            onClick={handleGoBack}
+          >
+            Back
+          </Button>
+        </Box>
 
-      {/* Error Message */}
-      {error && (
-        <NAlert type="error" title="Error" closable onClose={() => setError(null)}>
-          {error}
-        </NAlert>
-      )}
+        {/* Error Message */}
+        {error && (
+          <Alert 
+            severity="error" 
+            onClose={() => setError(null)}
+          >
+            {error}
+          </Alert>
+        )}
 
-      {/* Profile Form */}
-      <NCard>
-        <NSpace vertical size="large">
-          <NSpace align="center">
-            <Person style={{ fontSize: '24px' }} />
-            <NText style={{ fontSize: '20px', fontWeight: 'bold' }}>
-              Profile Information
-            </NText>
-          </NSpace>
+        {/* Profile Form */}
+        <Card>
+          <CardContent>
+            <Stack spacing={3}>
+              <Box display="flex" alignItems="center" gap={1}>
+                <Person />
+                <Typography variant="h5" component="h2">
+                  Profile Information
+                </Typography>
+              </Box>
 
-          <NForm>
-            <NFormItem 
-              label="Username" 
-              required
-              feedback={formErrors.username}
-              validationStatus={formErrors.username ? 'error' : undefined}
-            >
-              <NInput
-                value={formData.username}
-                onUpdateValue={(value) => handleInputChange('username', value)}
-                placeholder="Enter your username"
-                disabled={isEditing} // Can't change username when editing
-              />
-            </NFormItem>
+              <Stack spacing={2}>
+                <TextField
+                  label="Username"
+                  value={formData.username}
+                  onChange={(e) => handleInputChange('username', e.target.value)}
+                  placeholder="Enter your username"
+                  disabled={isEditing} // Can't change username when editing
+                  required
+                  error={!!formErrors.username}
+                  helperText={formErrors.username}
+                  fullWidth
+                />
 
-            <NFormItem 
-              label="Name" 
-              required
-              feedback={formErrors.name}
-              validationStatus={formErrors.name ? 'error' : undefined}
-            >
-              <NInput
-                value={formData.name}
-                onUpdateValue={(value) => handleInputChange('name', value)}
-                placeholder="Enter your dictator name"
-              />
-            </NFormItem>
+                <TextField
+                  label="Name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  placeholder="Enter your dictator name"
+                  required
+                  error={!!formErrors.name}
+                  helperText={formErrors.name}
+                  fullWidth
+                />
 
-            <NFormItem 
-              label="Country" 
-              required
-              feedback={formErrors.country}
-              validationStatus={formErrors.country ? 'error' : undefined}
-            >
-              <NInput
-                value={formData.country}
-                onUpdateValue={(value) => handleInputChange('country', value)}
-                placeholder="Enter your country"
-              />
-            </NFormItem>
+                <TextField
+                  label="Country"
+                  value={formData.country}
+                  onChange={(e) => handleInputChange('country', e.target.value)}
+                  placeholder="Enter your country"
+                  required
+                  error={!!formErrors.country}
+                  helperText={formErrors.country}
+                  fullWidth
+                />
 
-            <NFormItem 
-              label="Years in Power" 
-              required
-              feedback={formErrors.yearsInPower}
-              validationStatus={formErrors.yearsInPower ? 'error' : undefined}
-            >
-              <NInput
-                value={formData.yearsInPower}
-                onUpdateValue={(value) => handleInputChange('yearsInPower', value)}
-                placeholder="e.g., 2000-2010 or 2000-present"
-              />
-            </NFormItem>
+                <TextField
+                  label="Years in Power"
+                  value={formData.yearsInPower}
+                  onChange={(e) => handleInputChange('yearsInPower', e.target.value)}
+                  placeholder="e.g., 2000-2010 or 2000-present"
+                  required
+                  error={!!formErrors.yearsInPower}
+                  helperText={formErrors.yearsInPower}
+                  fullWidth
+                />
 
-            <NFormItem 
-              label="Description" 
-              required
-              feedback={formErrors.description}
-              validationStatus={formErrors.description ? 'error' : undefined}
-            >
-              <NInput
-                type="textarea"
-                value={formData.description}
-                onUpdateValue={(value) => handleInputChange('description', value)}
-                placeholder="Describe your dictator persona, achievements, and leadership style..."
-                rows={6}
-              />
-            </NFormItem>
-          </NForm>
+                <TextField
+                  label="Description"
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Describe your dictator persona, achievements, and leadership style..."
+                  multiline
+                  rows={6}
+                  required
+                  error={!!formErrors.description}
+                  helperText={formErrors.description}
+                  fullWidth
+                />
+              </Stack>
 
-          <NSpace justify="end">
-            <NButton onClick={handleGoBack}>
-              Cancel
-            </NButton>
-            <NButton
-              type="primary"
-              loading={loading}
-              renderIcon={() => <Save />}
-              onClick={handleSubmit}
-            >
-              {isEditing ? 'Update Profile' : 'Create Profile'}
-            </NButton>
-          </NSpace>
-        </NSpace>
-      </NCard>
-    </NSpace>
+              <Box display="flex" justifyContent="flex-end" gap={2}>
+                <Button onClick={handleGoBack}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  disabled={loading}
+                  startIcon={<Save />}
+                  onClick={handleSubmit}
+                >
+                  {isEditing ? 'Update Profile' : 'Create Profile'}
+                </Button>
+              </Box>
+            </Stack>
+          </CardContent>
+        </Card>
+      </Stack>
+    </Container>
   );
 };
 

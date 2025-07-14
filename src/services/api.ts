@@ -54,30 +54,15 @@ export const publicApi = {
     const response = await api.get<Dictator>(`/dictators/${id}`);
     return response.data;
   },
-
-  getAchievements: async (): Promise<Achievement[]> => {
-    const response = await api.get<Achievement[]>('/achievements');
-    return response.data;
-  },
-
-  getAchievementById: async (id: number): Promise<Achievement> => {
-    const response = await api.get<Achievement>(`/achievements/${id}`);
-    return response.data;
-  },
-
-  getDictatorAchievements: async (dictatorId: number): Promise<Achievement[]> => {
-    const response = await api.get<Achievement[]>(`/dictators/${dictatorId}/achievements`);
-    return response.data;
-  }  
 };
 
 export const protectedApi = {
   createOrUpdateDictator: async (dictator: CreateDictatorRequest & { id?: number }): Promise<Dictator> => {
     if (dictator.id) {
-      const response = await api.put<Dictator>(`/dictators/${dictator.id}`, dictator);
+      const response = await api.post<Dictator>(`/dictators/${dictator.id}`, dictator);
       return response.data;
     } else {
-      const response = await api.put<Dictator>('/dictators', dictator);
+      const response = await api.post<Dictator>('/dictators', dictator);
       return response.data;
     }
   },

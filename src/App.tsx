@@ -15,6 +15,7 @@ import DictatorDetailPage from './pages/DictatorDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import CreateProfilePage from './pages/CreateProfilePage';
 
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -32,7 +33,7 @@ const App: React.FC = () => {
       <KeycloakProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <Router>
+          <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
               <Header />
               <Sidebar />
@@ -69,6 +70,7 @@ const App: React.FC = () => {
                       </ProtectedRoute>
                     } 
                   />
+
                   
                   {/* 404 Route */}
                   <Route path="*" element={<div>Page not found</div>} />

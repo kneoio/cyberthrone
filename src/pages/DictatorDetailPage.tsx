@@ -12,10 +12,10 @@ import {
   Stack,
   Container
 } from '@mui/material';
-import { ArrowBack, Edit, CalendarToday, Person, LocationOn, EmojiEvents } from '@mui/icons-material';
+import { ArrowBack, CalendarToday, Person, LocationOn, EmojiEvents } from '@mui/icons-material';
 import { Dictator } from '../types/dictator';
 import { publicApi } from '../services/api';
-import { useKeycloak } from '../hooks/useKeycloak';
+
 import { formatDate, formatYearsInPower } from '../utils/helpers';
 import AchievementList from '../components/achievements/AchievementList';
 import LoadingSpinner from '../components/common/LoadingSpinner';
@@ -23,12 +23,10 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 const DictatorDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated, username } = useKeycloak();
+
   const [dictator, setDictator] = useState<Dictator | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const isOwner = isAuthenticated && username && dictator?.username === username;
 
   useEffect(() => {
     const fetchDictator = async () => {
@@ -54,9 +52,7 @@ const DictatorDetailPage: React.FC = () => {
     navigate(-1);
   };
 
-  const handleEditProfile = () => {
-    navigate(`/profile`);
-  };
+
 
   if (loading) {
     return <LoadingSpinner message="Loading dictator details..." />;
@@ -105,15 +101,7 @@ const DictatorDetailPage: React.FC = () => {
             Back
           </Button>
           
-          {isOwner && (
-            <Button
-              variant="contained"
-              startIcon={<Edit />}
-              onClick={handleEditProfile}
-            >
-              Edit Profile
-            </Button>
-          )}
+
         </Box>
 
         {/* Dictator Profile Card */}

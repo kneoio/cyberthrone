@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Alert,
-  Stack,
-  Container
-} from '@mui/material';
-import { Refresh } from '@mui/icons-material';
+import { Container, Typography, Box, Stack, Alert, Button } from '@mui/material';
+import { Refresh, Add } from '@mui/icons-material';
 import { Dictator } from '../types/dictator';
 import { publicApi } from '../services/api';
 import { useKeycloak } from '../hooks/useKeycloak';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../utils/constants';
 import DictatorList from '../components/dictators/DictatorList';
 
 const DictatorsPage: React.FC = () => {
   const { isAuthenticated } = useKeycloak();
+  const navigate = useNavigate();
   const [dictators, setDictators] = useState<Dictator[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,16 +33,17 @@ const DictatorsPage: React.FC = () => {
     fetchDictators();
   }, []);
 
-
-
   const handleRefresh = () => {
     fetchDictators();
+  };
+
+  const handleCreate = () => {
+    navigate(ROUTES.CREATE_PROFILE);
   };
 
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
       <Stack spacing={3}>
-        {/* Header */}
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
             <Typography variant="h3" component="h1" gutterBottom>
@@ -66,12 +63,18 @@ const DictatorsPage: React.FC = () => {
             >
               Refresh
             </Button>
-            
-
+            {isAuthenticated && (
+              <Button
+                variant="contained"
+                startIcon={<Add />}
+                onClick={handleCreate}
+              >
+                Create
+              </Button>
+            )}
           </Stack>
         </Box>
 
-        {/* Error Message */}
         {error && (
           <Alert 
             severity="error" 
@@ -81,7 +84,6 @@ const DictatorsPage: React.FC = () => {
           </Alert>
         )}
 
-        {/* Dictators List */}
         <DictatorList dictators={dictators} loading={loading} />
       </Stack>
     </Container>

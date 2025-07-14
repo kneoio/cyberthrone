@@ -10,7 +10,7 @@ import {
   Stack,
   Container
 } from '@mui/material';
-import { ArrowBack, Save, Person } from '@mui/icons-material';
+import { ArrowBack, Save } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { CreateDictatorRequest } from '../types/dictator';
 import { protectedApi } from '../services/api';
@@ -42,10 +42,8 @@ const CreateProfilePage: React.FC = () => {
       return;
     }
 
-    // Force reset form to ensure no username pre-filling
-    console.log('Resetting form - ensuring empty username');
     setFormData({
-      username: '',
+      username: username || '',
       name: '',
       country: '',
       description: '',
@@ -97,18 +95,11 @@ const CreateProfilePage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // Debug: Log the form data being sent
-      console.log('Form data being sent:', formData);
-      console.log('Username in form:', formData.username);
-
-      // Create new profile (no ID in formData)
       await protectedApi.createOrUpdateDictator(formData);
-
-      // Navigate back to dictators list to see the new profile
       navigate(ROUTES.DICTATORS);
     } catch (error) {
-      console.error('Failed to save profile:', error);
-      setError('Failed to save profile. Please try again.');
+      console.error('Failed to save:', error);
+      setError('Failed to save. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -121,7 +112,6 @@ const CreateProfilePage: React.FC = () => {
   const handleInputChange = (field: keyof CreateDictatorRequest, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
-    // Clear field error when user starts typing
     if (formErrors[field]) {
       setFormErrors(prev => ({ ...prev, [field]: undefined }));
     }
@@ -130,7 +120,6 @@ const CreateProfilePage: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ py: 3 }}>
       <Stack spacing={3}>
-        {/* Header */}
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
             <Typography variant="h3" component="h1" gutterBottom>
@@ -150,7 +139,6 @@ const CreateProfilePage: React.FC = () => {
           </Button>
         </Box>
 
-        {/* Error Message */}
         {error && (
           <Alert 
             severity="error" 
@@ -160,19 +148,16 @@ const CreateProfilePage: React.FC = () => {
           </Alert>
         )}
 
-        {/* Profile Form */}
         <Card>
           <CardContent>
             <Stack spacing={3}>
-
-
               <Stack spacing={2}>
                 <TextField
                   label="Username"
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   placeholder="Enter your username"
-                  disabled={false} // Users can set their own username
+                  disabled={false}
                   required
                   error={!!formErrors.username}
                   helperText={formErrors.username}

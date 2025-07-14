@@ -11,9 +11,8 @@ import {
   Button,
   Stack
 } from '@mui/material';
-import {
+import { 
   People,
-  Add,
   Person
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -62,21 +61,7 @@ const Sidebar: React.FC = () => {
             Browse All
           </Button>
           
-          {isAuthenticated && (
-            <>
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                fullWidth
-                onClick={() => handleNavigation(ROUTES.CREATE_PROFILE)}
-                sx={{ justifyContent: 'flex-start' }}
-              >
-                Create New
-              </Button>
-              
 
-            </>
-          )}
         </Stack>
         
         <Divider sx={{ my: 2 }} />

@@ -43,26 +43,29 @@ const ProfilePage: React.FC = () => {
       return;
     }
 
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await publicApi.getDictatorByUsername(username);
-        setDictator(data);
-      } catch (error) {
-        console.error('Failed to fetch profile:', error);
-        if (error instanceof Error && error.message.includes('404')) {
-          // User doesn't have a profile yet
-          navigate(ROUTES.CREATE_PROFILE);
-        } else {
-          setError('Failed to load your profile. Please try again.');
-        }
-      } finally {
-        setLoading(false);
-      }
+    // Create a mock dictator profile from JWT data since there's no backend endpoint
+    const createProfileFromJWT = () => {
+      setLoading(true);
+      setError(null);
+      
+      // Create a basic profile using JWT username
+      const mockDictator: Dictator = {
+        id: 1,
+        username: username,
+        name: username,
+        country: 'Unknown',
+        yearsInPower: `${new Date().getFullYear()}-Present`,
+        description: 'Profile created from JWT token',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        achievements: []
+      };
+      
+      setDictator(mockDictator);
+      setLoading(false);
     };
 
-    fetchProfile();
+    createProfileFromJWT();
   }, [isAuthenticated, username, navigate]);
 
   const handleAddAchievement = () => {
@@ -92,13 +95,18 @@ const ProfilePage: React.FC = () => {
         await protectedApi.updateAchievement(editingAchievement.id, achievementForm);
       } else {
         // Create new achievement
-        await protectedApi.createAchievement(achievementForm);
+        if (dictator?.id) {
+          await protectedApi.createAchievement(dictator.id, achievementForm);
+        }
       }
       
       // Refresh the profile data
       if (username) {
-        const updatedData = await publicApi.getDictatorByUsername(username);
-        setDictator(updatedData);
+        const allDictators = await publicApi.getDictators();
+        const updatedData = allDictators.find(d => d.username === username);
+        if (updatedData) {
+          setDictator(updatedData);
+        }
       }
       
       setShowAchievementModal(false);
@@ -114,8 +122,11 @@ const ProfilePage: React.FC = () => {
       
       // Refresh the profile data
       if (username) {
-        const updatedData = await publicApi.getDictatorByUsername(username);
-        setDictator(updatedData);
+        const allDictators = await publicApi.getDictators();
+        const updatedData = allDictators.find(d => d.username === username);
+        if (updatedData) {
+          setDictator(updatedData);
+        }
       }
     } catch (error) {
       console.error('Failed to delete achievement:', error);
@@ -148,7 +159,7 @@ const ProfilePage: React.FC = () => {
             You don't have a dictator profile yet. Create one to get started!
           </Alert>
           <Button variant="contained" onClick={() => navigate(ROUTES.CREATE_PROFILE)}>
-            Create Profile
+            Create Dictator
           </Button>
         </Stack>
       </Container>

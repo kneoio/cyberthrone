@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box,
+  Container,
   Typography,
-  Button,
-  Card,
-  CardContent,
-  Grid,
-  Divider,
   Stack,
-  Container
+  Box,
+  Divider,
+  Button,
+  Grid
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { People, Add, EmojiEvents } from '@mui/icons-material';
 import { Dictator } from '../types/dictator';
 import { publicApi } from '../services/api';
 import { useKeycloak } from '../hooks/useKeycloak';
@@ -58,7 +55,7 @@ const HomePage: React.FC = () => {
               mb: 2
             }}
           >
-            🏛️ {APP_NAME}
+{APP_NAME}
           </Typography>
           <Typography 
             variant="h5" 
@@ -71,23 +68,11 @@ const HomePage: React.FC = () => {
             <Button
               variant="contained"
               size="large"
-              startIcon={<People />}
               onClick={() => navigate(ROUTES.DICTATORS)}
             >
               Browse Dictators
             </Button>
-            {isAuthenticated ? (
-              <Button
-                variant="outlined"
-                size="large"
-                startIcon={<Add />}
-                onClick={() => navigate(ROUTES.CREATE_PROFILE)}
-              >
-                Create Profile
-              </Button>
-            ) : (
-              <LoginButton />
-            )}
+{!isAuthenticated && <LoginButton />}
           </Stack>
         </Box>
 
@@ -127,56 +112,7 @@ const HomePage: React.FC = () => {
 
         <Divider />
 
-        {/* Features Section */}
-        <Box textAlign="center">
-          <Typography variant="h3" component="h2" fontWeight="bold" gutterBottom>
-            What You Can Do
-          </Typography>
-          
-          <Grid container spacing={3} sx={{ mt: 2 }}>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ height: 200, '&:hover': { boxShadow: 4 } }}>
-                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                  <People sx={{ fontSize: 48, color: '#18a058', mb: 2 }} />
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    Browse Dictators
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Explore profiles and learn about different dictators from history
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ height: 200, '&:hover': { boxShadow: 4 } }}>
-                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                  <Add sx={{ fontSize: 48, color: '#2080f0', mb: 2 }} />
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    Create Profile
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Build your own dictator profile with custom information
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            
-            <Grid item xs={12} sm={6} md={4}>
-              <Card sx={{ height: 200, '&:hover': { boxShadow: 4 } }}>
-                <CardContent sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                  <EmojiEvents sx={{ fontSize: 48, color: '#f0a020', mb: 2 }} />
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    Manage Achievements
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Add and manage achievements for your dictator profile
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Box>
+
       </Stack>
     </Container>
   );

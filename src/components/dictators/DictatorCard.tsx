@@ -1,9 +1,17 @@
 import React from 'react';
-import { Card, CardContent, Typography, Button, Chip, Stack,  Badge } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Stack,
+  Chip,
+  Button
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Visibility, CalendarToday, EmojiEvents } from '@mui/icons-material';
 import { Dictator } from '../../types/dictator';
 import { truncateText, formatYearsInPower, getTotalAchievements } from '../../utils/helpers';
+import { useKeycloak } from '../../contexts/KeycloakContext';
+import { protectedApi } from '../../services/api';
 
 interface DictatorCardProps {
   dictator: Dictator;
@@ -11,10 +19,40 @@ interface DictatorCardProps {
 
 const DictatorCard: React.FC<DictatorCardProps> = ({ dictator }) => {
   const navigate = useNavigate();
+  const { username, isAuthenticated } = useKeycloak();
 
   const handleViewDetails = () => {
     navigate(`/dictators/${dictator.id}`);
   };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Are you sure you want to delete ${dictator.name}?`)) {
+      try {
+        await protectedApi.deleteDictator(dictator.id);
+        // Refresh the page or trigger a re-fetch
+        window.location.reload();
+      } catch (error: any) {
+        console.error('Failed to delete dictator:', error);
+        if (error.response?.status === 401) {
+          alert('401 Unauthorized: You are not authorized to delete this dictator.');
+        } else {
+          alert('Failed to delete dictator. Please try again.');
+        }
+      }
+    }
+  };
+
+  // Check if current user owns this dictator
+  const isOwner = isAuthenticated && username === dictator.username;
+  
+  // Debug ownership
+  console.log('Delete button debug:', {
+    isAuthenticated,
+    username,
+    dictatorUsername: dictator.username,
+    isOwner
+  });
 
   return (
     <Card
@@ -44,7 +82,6 @@ const DictatorCard: React.FC<DictatorCardProps> = ({ dictator }) => {
           </Stack>
           
           <Stack direction="row" alignItems="center" spacing={1}>
-            <CalendarToday fontSize="small" />
             <Typography variant="body2" color="text.secondary">
               {formatYearsInPower(dictator.yearsInPower)}
             </Typography>
@@ -65,23 +102,32 @@ const DictatorCard: React.FC<DictatorCardProps> = ({ dictator }) => {
           
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" alignItems="center" spacing={1}>
-              <EmojiEvents fontSize="small" />
-              <Badge badgeContent={getTotalAchievements(dictator)} color="primary">
-                <Typography variant="body2">Achievements</Typography>
-              </Badge>
+              <Typography variant="body2">
+                {getTotalAchievements(dictator)} Achievements
+              </Typography>
             </Stack>
             
-            <Button
-              variant="contained"
-              size="small"
-              startIcon={<Visibility />}
-              onClick={(e: React.MouseEvent) => {
-                e.stopPropagation();
-                handleViewDetails();
-              }}
-            >
-              View Details
-            </Button>
+            <Stack direction="row" spacing={1}>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  handleViewDetails();
+                }}
+              >
+                View Details
+              </Button>
+              
+              <Button
+                color="error"
+                size="small"
+                variant="outlined"
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            </Stack>
           </Stack>
         </Stack>
       </CardContent>

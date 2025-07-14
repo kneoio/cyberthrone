@@ -7,12 +7,7 @@ const Footer: React.FC = () => {
     <Box component="footer" sx={{ textAlign: 'center', py: 3, px: 2, mt: 'auto' }}>
       <Stack spacing={1}>
         <Divider />
-        <Typography variant="body2" color="text.secondary">
-          © {new Date().getFullYear()} {APP_NAME}. Built with React, TypeScript, and Material UI.
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          🏛️ Manage your dictator profiles and achievements with style!
-        </Typography>
+
       </Stack>
     </Box>
   );

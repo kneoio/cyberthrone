@@ -12,19 +12,17 @@ import {
 } from '@mui/material';
 import { ArrowBack, Save, Person } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { CreateDictatorRequest, Dictator } from '../types/dictator';
-import { publicApi, protectedApi } from '../services/api';
+import { CreateDictatorRequest } from '../types/dictator';
+import { protectedApi } from '../services/api';
 import { useKeycloak } from '../hooks/useKeycloak';
 import { ROUTES } from '../utils/constants';
 import { validateUsername, validateYearsInPower } from '../utils/helpers';
 
 const CreateProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, username } = useKeycloak();
-  const [existingDictator, setExistingDictator] = useState<Dictator | null>(null);
+  const { isAuthenticated, username, isLoading } = useKeycloak();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   
   const [formData, setFormData] = useState<CreateDictatorRequest>({
     username: '',
@@ -37,34 +35,23 @@ const CreateProfilePage: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof CreateDictatorRequest, string>>>({});
 
   useEffect(() => {
-    if (!isAuthenticated || !username) {
-      navigate(ROUTES.HOME);
+    if (!isAuthenticated || !username || isLoading) {
+      if (!isLoading && !isAuthenticated) {
+        navigate(ROUTES.HOME);
+      }
       return;
     }
 
-    // Check if user already has a profile
-    const checkExistingProfile = async () => {
-      try {
-        const data = await publicApi.getDictatorByUsername(username);
-        setExistingDictator(data);
-        setIsEditing(true);
-        
-        // Pre-populate form with existing data
-        setFormData({
-          username: data.username,
-          name: data.name,
-          country: data.country,
-          description: data.description,
-          yearsInPower: data.yearsInPower,
-        });
-      } catch (error) {
-        // No existing profile, start fresh
-        setFormData(prev => ({ ...prev, username: username || '' }));
-      }
-    };
-
-    checkExistingProfile();
-  }, [isAuthenticated, username, navigate]);
+    // Force reset form to ensure no username pre-filling
+    console.log('Resetting form - ensuring empty username');
+    setFormData({
+      username: '',
+      name: '',
+      country: '',
+      description: '',
+      yearsInPower: '',
+    });
+  }, [isAuthenticated, username, isLoading, navigate]);
 
   const validateForm = (): boolean => {
     const errors: Partial<Record<keyof CreateDictatorRequest, string>> = {};
@@ -110,16 +97,15 @@ const CreateProfilePage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      if (isEditing && existingDictator) {
-        // Update existing profile
-        await protectedApi.updateDictator(existingDictator.id, formData);
-      } else {
-        // Create new profile
-        await protectedApi.createDictator(formData);
-      }
+      // Debug: Log the form data being sent
+      console.log('Form data being sent:', formData);
+      console.log('Username in form:', formData.username);
 
-      // Navigate to profile page
-      navigate(ROUTES.PROFILE);
+      // Create new profile (no ID in formData)
+      await protectedApi.createOrUpdateDictator(formData);
+
+      // Navigate back to dictators list to see the new profile
+      navigate(ROUTES.DICTATORS);
     } catch (error) {
       console.error('Failed to save profile:', error);
       setError('Failed to save profile. Please try again.');
@@ -148,10 +134,10 @@ const CreateProfilePage: React.FC = () => {
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
             <Typography variant="h3" component="h1" gutterBottom>
-              {isEditing ? 'Edit Profile' : 'Create Profile'}
+              Create Dictator
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              {isEditing ? 'Update your dictator profile information' : 'Set up your dictator profile'}
+              Set up your dictator profile
             </Typography>
           </Box>
           
@@ -191,7 +177,7 @@ const CreateProfilePage: React.FC = () => {
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   placeholder="Enter your username"
-                  disabled={isEditing} // Can't change username when editing
+                  disabled={false} // Users can set their own username
                   required
                   error={!!formErrors.username}
                   helperText={formErrors.username}
@@ -255,7 +241,7 @@ const CreateProfilePage: React.FC = () => {
                   startIcon={<Save />}
                   onClick={handleSubmit}
                 >
-                  {isEditing ? 'Update Profile' : 'Create Profile'}
+                  Create Dictator
                 </Button>
               </Box>
             </Stack>

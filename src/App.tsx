@@ -6,7 +6,9 @@ import { ROUTES } from './utils/constants';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import Header from './components/common/Header';
 import Footer from './components/common/Footer';
+import Sidebar from './components/common/Sidebar';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import { KeycloakProvider } from './contexts/KeycloakContext';
 import HomePage from './pages/HomePage';
 import DictatorsPage from './pages/DictatorsPage';
 import DictatorDetailPage from './pages/DictatorDetailPage';
@@ -27,14 +29,23 @@ const theme = createTheme({
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Router>
-          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Header />
+      <KeycloakProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Router>
+            <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+              <Header />
+              <Sidebar />
             
-            <Box component="main" sx={{ flexGrow: 1, px: 3 }}>
-              <Box sx={{ maxWidth: '1200px', margin: '0 auto' }}>
+              <Box 
+                component="main" 
+                sx={{ 
+                  flexGrow: 1, 
+                  px: 3,
+                  ml: '240px' // Always account for sidebar width
+                }}
+              >
+                <Box sx={{ maxWidth: '1200px', margin: '0 auto' }}>
                 <Routes>
                   {/* Public Routes */}
                   <Route path={ROUTES.HOME} element={<HomePage />} />
@@ -62,13 +73,14 @@ const App: React.FC = () => {
                   {/* 404 Route */}
                   <Route path="*" element={<div>Page not found</div>} />
                 </Routes>
+                </Box>
               </Box>
+              
+              <Footer />
             </Box>
-            
-            <Footer />
-          </Box>
-        </Router>
-      </ThemeProvider>
+          </Router>
+        </ThemeProvider>
+      </KeycloakProvider>
     </ErrorBoundary>
   );
 };

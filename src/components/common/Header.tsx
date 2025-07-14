@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Home, People, Person } from '@mui/icons-material';
+
 import { useKeycloak } from '../../hooks/useKeycloak';
 import LoginButton from '../auth/LoginButton';
 import LogoutButton from '../auth/LogoutButton';
@@ -20,7 +20,7 @@ const Header: React.FC = () => {
           sx={{ fontWeight: 'bold', cursor: 'pointer', flexGrow: 0 }}
           onClick={() => navigate(ROUTES.HOME)}
         >
-          🏛️ {APP_NAME}
+          {APP_NAME}
         </Typography>
         
         <Box sx={{ flexGrow: 1 }} />
@@ -29,32 +29,20 @@ const Header: React.FC = () => {
           <Button
             color="inherit"
             onClick={() => navigate(ROUTES.HOME)}
-            startIcon={<Home />}
           >
             Home
           </Button>
           
-          <Button
-            color="inherit"
-            onClick={() => navigate(ROUTES.DICTATORS)}
-            startIcon={<People />}
-          >
-            Dictators
-          </Button>
-          
-          {isAuthenticated && (
-            <Button
-              color="inherit"
-              onClick={() => navigate(ROUTES.PROFILE)}
-              startIcon={<Person />}
-            >
-              My Profile
-            </Button>
-          )}
+
           
           {isAuthenticated ? (
             <Stack direction="row" spacing={2} alignItems="center">
-              <Typography variant="body1">Hello, {username}!</Typography>
+              <Button 
+                color="inherit" 
+                onClick={() => navigate(ROUTES.PROFILE)}
+              >
+                {username}
+              </Button>
               <LogoutButton />
             </Stack>
           ) : (

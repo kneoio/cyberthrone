@@ -1,9 +1,9 @@
 import Keycloak from 'keycloak-js';
 
 const keycloak = new Keycloak({
-  url: import.meta.env.VITE_KEYCLOAK_URL,
-  realm: import.meta.env.VITE_KEYCLOAK_REALM,
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
+  url: (import.meta as any).env.VITE_KEYCLOAK_URL || 'https://auth.kneo.io/',
+  realm: (import.meta as any).env.VITE_KEYCLOAK_REALM || 'zona-x',
+  clientId: (import.meta as any).env.VITE_KEYCLOAK_CLIENT_ID || 'useless',
 });
 
 export const initKeycloak = async () => {

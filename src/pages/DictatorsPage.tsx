@@ -7,7 +7,7 @@ import {
   Stack,
   Container
 } from '@mui/material';
-import { Add, Refresh } from '@mui/icons-material';
+import { Refresh } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { Dictator } from '../types/dictator';
 import { publicApi } from '../services/api';
@@ -40,9 +40,7 @@ const DictatorsPage: React.FC = () => {
     fetchDictators();
   }, []);
 
-  const handleCreateProfile = () => {
-    navigate(ROUTES.CREATE_PROFILE);
-  };
+
 
   const handleRefresh = () => {
     fetchDictators();
@@ -72,15 +70,7 @@ const DictatorsPage: React.FC = () => {
               Refresh
             </Button>
             
-            {isAuthenticated && (
-              <Button
-                variant="contained"
-                startIcon={<Add />}
-                onClick={handleCreateProfile}
-              >
-                Create Profile
-              </Button>
-            )}
+
           </Stack>
         </Box>
 

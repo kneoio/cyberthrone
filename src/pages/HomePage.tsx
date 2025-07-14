@@ -27,7 +27,6 @@ const HomePage: React.FC = () => {
     const fetchFeaturedDictators = async () => {
       try {
         const dictators = await publicApi.getDictators();
-        // Show first 3 dictators as featured
         setFeaturedDictators(dictators.slice(0, 3));
       } catch (error) {
         console.error('Failed to fetch featured dictators:', error);
@@ -42,7 +41,6 @@ const HomePage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 5 }}>
       <Stack spacing={6}>
-        {/* Hero Section */}
         <Box textAlign="center" py={8}>
           <Typography 
             variant="h2" 
@@ -78,7 +76,6 @@ const HomePage: React.FC = () => {
 
         <Divider />
 
-        {/* Featured Dictators Section */}
         <Box textAlign="center">
           <Typography variant="h3" component="h2" fontWeight="bold" gutterBottom>
             Featured Dictators

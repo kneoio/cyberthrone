@@ -30,7 +30,6 @@ const DictatorCard: React.FC<DictatorCardProps> = ({ dictator }) => {
     if (window.confirm(`Are you sure you want to delete ${dictator.name}?`)) {
       try {
         await protectedApi.deleteDictator(dictator.id);
-        // Refresh the page or trigger a re-fetch
         window.location.reload();
       } catch (error: any) {
         console.error('Failed to delete dictator:', error);
@@ -43,10 +42,8 @@ const DictatorCard: React.FC<DictatorCardProps> = ({ dictator }) => {
     }
   };
 
-  // Check if current user owns this dictator
   const isOwner = isAuthenticated && username === dictator.username;
   
-  // Debug ownership
   console.log('Delete button debug:', {
     isAuthenticated,
     username,

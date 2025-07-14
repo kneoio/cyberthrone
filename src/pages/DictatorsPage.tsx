@@ -8,15 +8,12 @@ import {
   Container
 } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import { Dictator } from '../types/dictator';
 import { publicApi } from '../services/api';
 import { useKeycloak } from '../hooks/useKeycloak';
-import { ROUTES } from '../utils/constants';
 import DictatorList from '../components/dictators/DictatorList';
 
 const DictatorsPage: React.FC = () => {
-  const navigate = useNavigate();
   const { isAuthenticated } = useKeycloak();
   const [dictators, setDictators] = useState<Dictator[]>([]);
   const [loading, setLoading] = useState(true);

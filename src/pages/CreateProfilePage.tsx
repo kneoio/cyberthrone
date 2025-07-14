@@ -164,12 +164,7 @@ const CreateProfilePage: React.FC = () => {
         <Card>
           <CardContent>
             <Stack spacing={3}>
-              <Box display="flex" alignItems="center" gap={1}>
-                <Person />
-                <Typography variant="h5" component="h2">
-                  Profile Information
-                </Typography>
-              </Box>
+
 
               <Stack spacing={2}>
                 <TextField
